@@ -1,12 +1,12 @@
-# html-slide-builder（專案藍圖）
+# slides-html（專案藍圖）
 
 > 本檔為跨 Agent 通用的專案藍圖（AGENTS.md 開放標準）。任何 Agent 的每個 session 都應先讀本檔＋`handoff.md`。
 
 ## 專案簡介
 
-一個跨 Agent 通用的 Skill（Claude Code／Codex／OpenCode／Antigravity 四家共用同一份、安裝名皆為 `html-slide-builder`），把任何主題或內容（教材、提案、活動、會議、報告）轉為 Reveal.js HTML 互動簡報。主要入口 `skill/SKILL.md`，安裝程式 `install.py`。本專案 fork 自上游，已移除上游的 Firebase demo 硬編碼 key。
+一個跨 Agent 通用的 Skill（Claude Code／Codex／OpenCode／Antigravity 四家共用同一份、安裝名皆為 `html-slides`），把任何主題或內容（教材、提案、活動、會議、報告）轉為 Reveal.js HTML 互動簡報。主要入口 `skill/SKILL.md`，安裝程式 `install.py`。本專案 fork 自上游，已移除上游的 Firebase demo 硬編碼 key。
 
-聽眾即時互動（文字雲、投票）**不在本專案範圍內**：改由 `interactive-web-builder` 專案的 `word-cloud-page`／`poll-page` 技能產生獨立互動頁，簡報只放一頁 QR Code 連過去。本專案因此完全不碰 Firebase。
+聽眾即時互動（文字雲、投票）**不在本專案範圍內**：改由 `slides-audience` 專案的 `audience-wordcloud`／`audience-poll` 技能產生獨立互動頁，簡報只放一頁 QR Code 連過去。本專案因此完全不碰 Firebase。
 
 ## 關鍵時程
 
@@ -21,12 +21,12 @@
 - [ ] 階段五：以一份無敏感資訊的教材測試輸出到 `output/<英文短名>/`
 - [ ] 階段六：製作新簡報時依內容套用 `[HOVER]`，以實際瀏覽器預覽確認效果
 - [x] 階段七：Firebase 互動元件改子集合、共用 `word-cloud-c0bfe` 專案並部署安全規則
-- [x] 階段八：互動元件全數移除，改由 `interactive-web-builder` 的 `word-cloud-page`／`poll-page` 技能產生獨立頁；本 Skill 只負責簡報與 QR Code 頁
+- [x] 階段八：互動元件全數移除，改由 `slides-audience` 的 `audience-wordcloud`／`audience-poll` 技能產生獨立頁；本 Skill 只負責簡報與 QR Code 頁
 
 ## 資料夾結構
 
 ```
-html-slide-builder/
+slides-html/
 ├─ skill/
 │  ├─ SKILL.md                              # Skill 觸發條件與簡報製作流程
 │  ├─ references/reveal-template.md         # Reveal.js HTML 範本與元件樣式
@@ -45,8 +45,8 @@ html-slide-builder/
 | 層級 | 平台 | 位置 | 讀取時機 |
 |------|------|------|---------|
 | L1 | 本地（GDrive） | `AGENTS.md`＋`handoff.md` | 每個 session |
-| L2 | GitHub | https://github.com/changyiwu/html-slide-builder （公開） | 指定時 |
-| L3 | Obsidian | `html-slide-builder/專案工作流程.md` | 有需要時 |
+| L2 | GitHub | https://github.com/changyiwu/slides-html （公開） | 指定時 |
+| L3 | Obsidian | `slides-html/專案工作流程.md` | 有需要時 |
 
 ## 三個檔案的職責（依「時效性」分家，不是依「詳細程度」）
 
@@ -65,8 +65,8 @@ html-slide-builder/
 - 任何 Agent、任何電腦：**開工先讀 `handoff.md`，收工必更新 `handoff.md`**
 - 修改共用檔案前先讀最新內容，避免覆蓋其他 Agent 的變更
 - **`skill/` 改完用 `python install.py` 或位元組複製的同步工具都可以**：生圖技能改為執行時解析（見〈設計決策〉），源檔不再有 `{{DRAW_*}}` 占位符，四家副本是同一份 bytes，安裝時也不再注入任何東西。**`install.py` 仍有 `input()`，在沒有 stdin 的 agent 環境會 `EOFError` 中斷**；那種情況改用位元組複製，複製後逐檔 hash 比對
-- **⚠️ 聽眾即時互動不要在本 Skill 裡重做。**文字雲與投票已於 2026-08-05 全數移除，改由 `interactive-web-builder` 的 `word-cloud-page`／`poll-page` 技能產生獨立互動頁，本 Skill 只加一頁 QR Code 連過去。理由：內嵌版要在同一份簡報 HTML 裡處理 Firebase 初始化、匿名登入、App Check 與安全規則，維護成本高，且那些設定的正本本來就在另一個 repo。**要改互動功能請去改那兩個技能，不要把 Firebase 程式碼搬回本專案**
-- **本專案不需要任何 Firebase 設定**：`install.py` 不再詢問、`skill/` 不再有 `{{FIREBASE_*}}`／`{{RECAPTCHA_*}}` 占位符。互動頁的資料庫設定、安全規則與 App Check 全在 `interactive-web-builder`
+- **⚠️ 聽眾即時互動不要在本 Skill 裡重做。**文字雲與投票已於 2026-08-05 全數移除，改由 `slides-audience` 的 `audience-wordcloud`／`audience-poll` 技能產生獨立互動頁，本 Skill 只加一頁 QR Code 連過去。理由：內嵌版要在同一份簡報 HTML 裡處理 Firebase 初始化、匿名登入、App Check 與安全規則，維護成本高，且那些設定的正本本來就在另一個 repo。**要改互動功能請去改那兩個技能，不要把 Firebase 程式碼搬回本專案**
+- **本專案不需要任何 Firebase 設定**：`install.py` 不再詢問、`skill/` 不再有 `{{FIREBASE_*}}`／`{{RECAPTCHA_*}}` 占位符。互動頁的資料庫設定、安全規則與 App Check 全在 `slides-audience`
 - 所有回應與文件使用繁體中文
 - 保留既有 README、Skill 指令、授權資訊與專案歷史；變更時採**最小範圍修改**
 - 產出的簡報集中於 `output/<簡報英文短名>/`，不可把教材、API 金鑰或服務帳戶憑證提交至 Git

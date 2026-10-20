@@ -1,4 +1,4 @@
-# 🎨 html-slide-builder — 跨 Agent 通用 Skill
+# 🎨 slides-html — 跨 Agent 通用 Skill（html-slides）
 
 > 給定任何主題或內容，自動生成完整的 **Reveal.js HTML 互動簡報** 並部署至 GitHub Pages。
 > 支援 **Claude Code / Codex / OpenCode / Antigravity** 四個 Agent，一次安裝到本機已有的每一個。
@@ -14,7 +14,7 @@
 |------|------|
 | 🖼 **AI 背景底圖** | 每一頁皆套用 draw skill 生成的霓虹暗色底圖；依內容分群，每 3–5 頁可共用一張 |
 | 😀 **emoji 與圖標** | 預設以 emoji 強化合適的標題與卡片；只有明確要求時才生成客製圖標 |
-| 💬 **聽眾即時互動** | 交給 `word-cloud-page`／`poll-page` 技能產生獨立互動頁，簡報只放一頁 QR Code 連過去 |
+| 💬 **聽眾即時互動** | 交給 `audience-wordcloud`／`audience-poll` 技能產生獨立互動頁，簡報只放一頁 QR Code 連過去 |
 | 🔀 **視覺化演示** | clip-path 滑桿揭露效果；需明確指定才加入 |
 | 🚀 **一鍵部署** | 自動 git init → GitHub 公開 repo → GitHub Pages |
 
@@ -42,19 +42,19 @@
 
 | Agent | 全域技能目錄 | 偵測依據 |
 |-------|-------------|---------|
-| Claude Code | `~/.claude/skills/html-slide-builder/` | `~/.claude/` 存在 |
-| Codex | `~/.agents/skills/html-slide-builder/` | `~/.agents/` 存在 |
-| OpenCode | `~/.config/opencode/skills/html-slide-builder/` | `~/.config/opencode/` 存在 |
-| Antigravity | `~/.gemini/config/skills/html-slide-builder/` | `~/.gemini/config/` 存在 |
+| Claude Code | `~/.claude/skills/html-slides/` | `~/.claude/` 存在 |
+| Codex | `~/.agents/skills/html-slides/` | `~/.agents/` 存在 |
+| OpenCode | `~/.config/opencode/skills/html-slides/` | `~/.config/opencode/` 存在 |
+| Antigravity | `~/.gemini/config/skills/html-slides/` | `~/.gemini/config/` 存在 |
 
-設定根目錄不存在＝這台沒裝那個工具，安裝腳本會自動略過，不會建垃圾目錄。四家的安裝名一律是 `html-slide-builder`，不加 agent 前綴。
+設定根目錄不存在＝這台沒裝那個工具，安裝腳本會自動略過，不會建垃圾目錄。四家的安裝名一律是 `html-slides`，不加 agent 前綴。
 
 ### 一鍵安裝
 
 ```bash
 # 1. Clone 此 repo
-git clone https://github.com/changyiwu/html-slide-builder.git
-cd html-slide-builder
+git clone https://github.com/changyiwu/slides-html.git
+cd slides-html
 
 # 2. 執行安裝腳本（會自動檢查元件並引導設定）
 python install.py
@@ -71,10 +71,10 @@ python install.py
 
 ```bash
 # 複製 skill 目錄到你要用的 Agent 技能資料夾（有裝哪個就複製哪個）
-cp -r skill/ ~/.claude/skills/html-slide-builder/
-cp -r skill/ ~/.agents/skills/html-slide-builder/
-cp -r skill/ ~/.config/opencode/skills/html-slide-builder/
-cp -r skill/ ~/.gemini/config/skills/html-slide-builder/
+cp -r skill/ ~/.claude/skills/html-slides/
+cp -r skill/ ~/.agents/skills/html-slides/
+cp -r skill/ ~/.config/opencode/skills/html-slides/
+cp -r skill/ ~/.gemini/config/skills/html-slides/
 ```
 
 手動安裝也可以——`SKILL.md` 會在執行時自行解析該 Agent 的生圖技能（找技能目錄下名稱含 `draw` 的資料夾），不需要任何替換。`install.py` 的額外價值在於元件檢查。
@@ -82,7 +82,7 @@ cp -r skill/ ~/.gemini/config/skills/html-slide-builder/
 ### 專案維護與輸出
 
 - Skill 原始碼位於 `skill/`；安裝後才會複製到本機各 Agent 的技能目錄。改完原始檔要重跑 `python install.py`（或用位元組複製的同步工具）才會生效。
-- **生圖技能的路徑是執行時解析的，不是安裝時注入的。**`SKILL.md` 從自己所在的技能目錄找名稱含 `draw` 的資料夾，所以四家副本可以是同一份 bytes，`sync-skills` 這類純位元組複製的同步工具也能用。2026-08-01 以前的做法是安裝時把路徑寫死進副本，那會讓四份副本互不相同、也都不等於源檔——同步工具一跑就把占位符蓋回去、生圖失效。
+- **生圖技能的路徑是執行時解析的，不是安裝時注入的。**`SKILL.md` 從自己所在的技能目錄找名稱含 `draw` 的資料夾，所以四家副本可以是同一份 bytes，`skill-sync` 這類純位元組複製的同步工具也能用。2026-08-01 以前的做法是安裝時把路徑寫死進副本，那會讓四份副本互不相同、也都不等於源檔——同步工具一跑就把占位符蓋回去、生圖失效。
 - 每份生成的簡報請放在 `output/<簡報英文短名>/`，例如 `output/ai-course/`；`output/` 是本機產出，不納入版本控制。
 - `.env` 與其他 API 金鑰均不可提交。GitHub 的建立與部署請在需要時另行明確執行。
 
@@ -114,7 +114,7 @@ Agent 會自動：
 ## 📁 Skill 結構
 
 ```
-html-slide-builder/
+slides-html/
 ├── SKILL.md                    # 主要指令（Agent 讀取）
 ├── scripts/
 │   └── remove_bg.py            # PIL 圖標去背腳本
@@ -130,8 +130,8 @@ html-slide-builder/
 
 | 需求 | 技能 | 產出 |
 |------|------|------|
-| 輸入字詞 → 即時文字雲 | `word-cloud-page` | 一份可獨立部署的 `.html` |
-| 選選項 → 即時圓餅／長條／折線圖 | `poll-page` | 一份可獨立部署的 `.html` |
+| 輸入字詞 → 即時文字雲 | `audience-wordcloud` | 一份可獨立部署的 `.html` |
+| 選選項 → 即時圓餅／長條／折線圖 | `audience-poll` | 一份可獨立部署的 `.html` |
 
 互動頁與簡報放同一個資料夾、一起部署即可。Firebase 的設定、安全規則與 App Check 全部由那兩個技能負責，本 Skill 不再需要任何 Firebase 設定。
 
@@ -152,7 +152,7 @@ html-slide-builder/
 
 ### 互動頁 QR Code [QR]
 - **非預設功能**：只有明確要求文字雲、投票或聽眾即時參與時才加入。
-- 先用 `word-cloud-page`／`poll-page` 技能產生互動頁並部署，再加一頁把網址畫成 QR Code。
+- 先用 `audience-wordcloud`／`audience-poll` 技能產生互動頁並部署，再加一頁把網址畫成 QR Code。
 
 ### 滑桿視覺化 [VIZ]
 - **非預設功能**：只有明確要求滑桿或可拖曳的前後對比時才加入。

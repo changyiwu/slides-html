@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-html-slide-builder Skill 安裝腳本（跨 Agent 通用）
+html-slides Skill 安裝腳本（跨 Agent 通用）
 支援 Claude Code / Codex / OpenCode / Antigravity
 用法：python install.py
 """
@@ -27,7 +27,7 @@ def info(msg): print(f"  {C}→{X}  {msg}")
 def head(msg): print(f"\n{B}{msg}{X}")
 
 
-SKILL_NAME = "html-slide-builder"
+SKILL_NAME = "html-slides"
 
 # 安裝名一律用 SKILL_NAME（不加 agent 前綴）——這個 Skill 四家通用。
 # root   = 該工具的設定根目錄，用來判斷「這台有沒有裝這個工具」
@@ -278,7 +278,7 @@ def install_skill(targets: list) -> list:
 def main():
     print(f"""
 {B}{C}╔════════════════════════════════════════════════════╗
-║   html-slide-builder Skill 安裝程式                ║
+║   html-slides Skill 安裝程式                       ║
 ║   內容 → AI 互動 HTML 簡報 + GitHub Pages         ║
 ║   Claude Code / Codex / OpenCode / Antigravity     ║
 ╚════════════════════════════════════════════════════╝{X}
@@ -325,7 +325,7 @@ def main():
         return
 
     print(f"""
-  {G}{B}✔ html-slide-builder Skill 已安裝到 {len(installed)} 個 Agent！{X}
+  {G}{B}✔ html-slides Skill 已安裝到 {len(installed)} 個 Agent！{X}
 
   {B}使用方式：{X}
     在任一已安裝的 Agent 對話中說：

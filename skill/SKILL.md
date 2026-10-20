@@ -1,5 +1,5 @@
 ---
-name: html-slide-builder
+name: html-slides
 description: |
   給定任何簡報需求或內容（主題、文字、提案、會議內容、活動資訊、報告、PDF、教材或口述需求），自動生成完整的 Reveal.js HTML 互動簡報並部署至 GitHub Pages。
 
@@ -9,7 +9,7 @@ description: |
   3. CSS 微互動（卡片滑過發光／浮起、流程節點滑過輕微抖動）
   4. 滑桿視覺化演示（clip-path 揭露，適合前後對比內容）
 
-  聽眾即時互動（文字雲、投票）不由本 Skill 產生，改用 `word-cloud-page`／`poll-page` 技能產生獨立頁面，簡報只放一頁 QR Code 連過去。
+  聽眾即時互動（文字雲、投票）不由本 Skill 產生，改用 `audience-wordcloud`／`audience-poll` 技能產生獨立頁面，簡報只放一頁 QR Code 連過去。
 
   預設為每一頁簡報套用 AI 生成底圖，並依內容分群重用底圖；在標題、段落標籤、重點卡與流程節點等合適位置使用 emoji；為卡片與流程節點加入節制的 CSS 微互動。預設不得加入點擊按鈕、點擊後動畫、或左下角的互動操作提示。只有使用者明確要求圖標、生圖圖示、可點擊效果或視覺化滑桿時，才可加入對應功能。
 
@@ -114,7 +114,7 @@ description: |
 各家 Agent 的生圖技能安裝名不同（`claude-draw`／`codex-draw`／`opencode-draw`／`antigravity-draw`），所以**不要寫死路徑**，執行時現找：本技能所在資料夾的**上一層**就是這個 Agent 的全域技能目錄，在裡面找名稱含 `draw` 的資料夾。
 
 ```powershell
-# $skillRoot = 本技能（html-slide-builder）的資料夾路徑
+# $skillRoot = 本技能（html-slides）的資料夾路徑
 $skillsDir = Split-Path $skillRoot -Parent
 $drawDir   = Get-ChildItem $skillsDir -Directory -EA SilentlyContinue |
              Where-Object { $_.Name -match 'draw' } | Select-Object -First 1
@@ -281,8 +281,8 @@ for i, name in enumerate(icons):
 
 | 使用者要的 | 用哪個技能 | 產出 |
 |-----------|-----------|------|
-| 聽眾輸入字詞 → 即時文字雲 | `word-cloud-page` | 一份可獨立部署的 `.html` |
-| 聽眾選選項 → 即時圓餅／長條／折線圖 | `poll-page` | 一份可獨立部署的 `.html` |
+| 聽眾輸入字詞 → 即時文字雲 | `audience-wordcloud` | 一份可獨立部署的 `.html` |
+| 聽眾選選項 → 即時圓餅／長條／折線圖 | `audience-poll` | 一份可獨立部署的 `.html` |
 
 理由：簡報內嵌的版本要在同一份 HTML 裡處理 Firebase 初始化、匿名登入、App Check 與安全規則，維護成本高且容易與投影切換打架；獨立頁讓聽眾在自己手機上操作、講者投影同一個網址看結果，兩邊互不干擾。
 
@@ -385,7 +385,7 @@ Phase 1: 輸出大綱 → 等待確認 ← 必須停在這裡
 Phase 2: 生成 HTML 骨架
 Phase 3+4: 可平行（底圖生成 + 僅在要求圖標時才生成圖標）
 Phase 5: 為合適卡片與流程節點加入預設 CSS 微互動
-Phase 6: 僅在明確要求時，用 word-cloud-page／poll-page 技能產生互動頁，並加一頁 QR
+Phase 6: 僅在明確要求時，用 audience-wordcloud／audience-poll 技能產生互動頁，並加一頁 QR
 Phase 7: 僅在明確要求時，寫入 VIZ 滑桿
 Phase 8: 確認一切完成後才 push
 ```
@@ -397,5 +397,5 @@ Phase 8: 確認一切完成後才 push
 | 檔案 | 用途 |
 |------|------|
 | `references/reveal-template.md` | Reveal.js HTML 完整模板、CSS 元件庫 |
-| `word-cloud-page`／`poll-page` 技能 | 聽眾即時互動頁（文字雲／投票），本 Skill 只放 QR 連過去 |
+| `audience-wordcloud`／`audience-poll` 技能 | 聽眾即時互動頁（文字雲／投票），本 Skill 只放 QR 連過去 |
 | `scripts/remove_bg.py` | PIL 圖標去背腳本（對 images/icon_*.png 執行） |
